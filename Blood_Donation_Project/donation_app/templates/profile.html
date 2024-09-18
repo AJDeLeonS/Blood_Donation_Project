@@ -1,0 +1,115 @@
+<!-- templates/users/profile.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <!-- Add Bootstrap for styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Complete Your Profile</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <!-- Render the form fields -->
+            <div class="mb-3">
+                {{ form.first_name.label_tag }} 
+                {{ form.first_name }}
+            </div>
+            <div class="mb-3">
+                {{ form.last_name.label_tag }} 
+                {{ form.last_name }}
+            </div>
+            <div class="mb-3">
+                {{ form.weight.label_tag }} 
+                {{ form.weight }}
+            </div>
+            <div class="mb-3">
+                {{ form.height.label_tag }} 
+                {{ form.height }}
+            </div>
+            <div class="mb-3">
+                {{ form.blood_type.label_tag }} 
+                {{ form.blood_type }}
+            </div>
+            <div class="mb-3">
+                {{ form.availability.label_tag }} 
+                {{ form.availability }}
+            </div>
+
+            <!-- Region Dropdown -->
+            <div class="mb-3">
+                {{ form.region.label_tag }} 
+                {{ form.region }}
+            </div>
+
+            <!-- Province Dropdown (updated based on selected region) -->
+            <div class="mb-3">
+                {{ form.province.label_tag }} 
+                {{ form.province }}
+            </div>
+
+            <!-- Municipality Dropdown (updated based on selected province) -->
+            <div class="mb-3">
+                {{ form.municipality.label_tag }} 
+                {{ form.municipality }}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Profile</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+
+    <!-- JavaScript to dynamically update provinces and municipalities -->
+    <script>
+        const regionSelect = document.getElementById('id_region');
+        const provinceSelect = document.getElementById('id_province');
+        const municipalitySelect = document.getElementById('id_municipality');
+
+        // Listen for changes to the region dropdown and fetch provinces
+        regionSelect.addEventListener('change', function () {
+            const region = this.value;
+            fetch(`/users/load-provinces/?region=${region}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Clear the province dropdown
+                    provinceSelect.innerHTML = '<option value="">Select a province</option>';
+                    municipalitySelect.innerHTML = '<option value="">Select a municipality</option>';
+
+                    // Populate the province dropdown
+                    data.provinces.forEach(function (province) {
+                        const option = document.createElement('option');
+                        option.value = province;
+                        option.textContent = province;
+                        provinceSelect.appendChild(option);
+                    });
+                });
+        });
+
+        // Listen for changes to the province dropdown and fetch municipalities
+        provinceSelect.addEventListener('change', function () {
+            const province = this.value;
+            fetch(`/users/load-municipalities/?province=${province}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Clear the municipality dropdown
+                    municipalitySelect.innerHTML = '<option value="">Select a municipality</option>';
+
+                    // Populate the municipality dropdown
+                    data.municipalities.forEach(function (municipality) {
+                        const option = document.createElement('option');
+                        option.value = municipality;
+                        option.textContent = municipality;
+                        municipalitySelect.appendChild(option);
+                    });
+                });
+        });
+    </script>
+</body>
+</html>

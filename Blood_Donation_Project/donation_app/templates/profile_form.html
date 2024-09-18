@@ -1,0 +1,18 @@
+<script>
+    function updateProvinces(region) {
+        const provinces = {
+            'Region III': ['Pampanga', 'Tarlac'],
+            'Region IV': ['Cavite', 'Laguna']
+        };
+        const provinceField = document.getElementById('province');
+        provinceField.innerHTML = '';  // Clear previous options
+        
+        if (region in provinces) {
+            provinces[region].forEach(province => {
+                let option = document.createElement('option');
+                option.text = province;
+                provinceField.add(option);
+            });
+        }
+    }
+</script>
